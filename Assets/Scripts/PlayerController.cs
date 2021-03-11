@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0.1f, 180f)]
     float camRotSpeed = 90f;
     float camRotationAmounthY;
+    float camRotationAmounthX;
+    [SerializeField, Range(-150, 150)]
+    float camMaxRotation = 45f;
     [SerializeField, Range(0.1f, 15f)]
     float jumpForce = 5f;
     [SerializeField, Range(0.01f, 10f)]
@@ -32,23 +35,24 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        playerInputs = new PlayerInputs();
+        rb ??= GetComponent<Rigidbody>();
+        playerInputs ??= new PlayerInputs();
     }
 
     void OnEnable()
     {
-        playerInputs.Enable();
+        playerInputs?.Enable();
     }
 
     void OnDisable()
     {
-        playerInputs.Disable();
+        playerInputs?.Disable();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         playerInputs.Gameplay.Jump.performed += _=> Jump();
         playerInputs.Gameplay.Run.performed += _=> augmentedSpeed = augmentedFactor;
         playerInputs.Gameplay.Run.canceled += _=> augmentedSpeed = baseSpeed;
@@ -56,8 +60,9 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        camTrs.Rotate(Vector3.right * -CamAxis.y * camRotSpeed * Time.deltaTime);
-
+        camRotationAmounthX -= CamAxis.y * camRotSpeed * Time.deltaTime;
+        camRotationAmounthX = Mathf.Clamp(camRotationAmounthX, -camMaxRotation, camMaxRotation);
+        camTrs.localRotation = Quaternion.Euler(camRotationAmounthX, camTrs.rotation.y, camTrs.rotation.z);
         camRotationAmounthY += CamAxis.x * camRotSpeed * Time.deltaTime;
         rb.rotation = Quaternion.Euler(rb.rotation.x, camRotationAmounthY, rb.rotation.z);
         rb.position += Forward * moveSpeed * augmentedSpeed * Time.deltaTime;

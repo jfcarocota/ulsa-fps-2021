@@ -446,6 +446,7 @@ MonoBehaviour:
   moveSpeed: 10
   camTrs: {fileID: 1492249570}
   camRotSpeed: 30
+  camMaxRotation: 90
   jumpForce: 7
   rayLength: 0.5
   rayColor: {r: 1, g: 0, b: 1, a: 1}
