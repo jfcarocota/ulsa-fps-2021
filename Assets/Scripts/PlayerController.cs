@@ -32,6 +32,9 @@ public class PlayerController : MonoBehaviour
     float augmentedFactor = 1f;
     float augmentedSpeed = 1f;
     float baseSpeed = 1f;
+    [SerializeField]
+    List<Weapon> weapons;
+    int weaponIndex = 0;
 
     void Awake()
     {
@@ -56,6 +59,7 @@ public class PlayerController : MonoBehaviour
         playerInputs.Gameplay.Jump.performed += _=> Jump();
         playerInputs.Gameplay.Run.performed += _=> augmentedSpeed = augmentedFactor;
         playerInputs.Gameplay.Run.canceled += _=> augmentedSpeed = baseSpeed;
+        playerInputs.Gameplay.Shoot.performed += _=> weapons[weaponIndex].Shoot();
     }
 
     void Update()
