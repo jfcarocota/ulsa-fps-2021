@@ -59,4 +59,6 @@ public class Weapon : MonoBehaviour
         Gizmos.color = rayColor;
         Gizmos.DrawRay(rayOrigin.position, transform.forward * rayDistance);
     }
+
+    public void Active(bool visible) => gameObject.SetActive(visible);
 }

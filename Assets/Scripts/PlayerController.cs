@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
         playerInputs.Gameplay.Jump.performed += _=> Jump();
         playerInputs.Gameplay.Run.performed += _=> augmentedSpeed = augmentedFactor;
         playerInputs.Gameplay.Run.canceled += _=> augmentedSpeed = baseSpeed;
-        playerInputs.Gameplay.Shoot.performed += _=> weapons[weaponIndex].Shoot();
+        playerInputs.Gameplay.Shoot.performed += _=> CurrentWeapon.Shoot();
     }
 
     void Update()
@@ -70,6 +70,20 @@ public class PlayerController : MonoBehaviour
         camRotationAmounthY += CamAxis.x * camRotSpeed * Time.deltaTime;
         rb.rotation = Quaternion.Euler(rb.rotation.x, camRotationAmounthY, rb.rotation.z);
         rb.position += Forward * moveSpeed * augmentedSpeed * Time.deltaTime;
+
+        if(WheelAxisYClampInt != 0f)
+        {
+            CurrentWeapon.Active(false);
+            //cambio de arma
+            weaponIndex += WheelAxisYClampInt + weaponIndex > 0 &&
+            WheelAxisYClampInt + weaponIndex < weapons.Count ?
+            WheelAxisYClampInt : 0;
+            //fin cambio de arma
+            CurrentWeapon.Active(true);
+
+
+            Debug.Log(weaponIndex);
+        }
     }
 
     void Jump()
@@ -99,4 +113,12 @@ public class PlayerController : MonoBehaviour
     Vector3 JumpDirection => Vector3.up * jumpForce;
 
     Vector3 RelativeRayPosition => rayPosition + transform.position;
+
+    int WheelAxisYClampInt => (int)Mathf.Ceil(WheelAxisYClamped);
+
+    float WheelAxisYClamped => Mathf.Clamp(WheelAxisY, -1, 1);
+
+    float WheelAxisY => playerInputs.Gameplay.WeaponChange.ReadValue<float>();
+
+    Weapon CurrentWeapon => weapons[weaponIndex];
 }
