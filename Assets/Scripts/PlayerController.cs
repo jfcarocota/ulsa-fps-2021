@@ -75,14 +75,40 @@ public class PlayerController : MonoBehaviour
         {
             CurrentWeapon.Active(false);
             //cambio de arma
-            weaponIndex += WheelAxisYClampInt + weaponIndex > 0 &&
+            /*if(WheelAxisYClampInt + weaponIndex >= 0 && WheelAxisYClampInt + weaponIndex < weapons.Count)
+            {
+                weaponIndex += WheelAxisYClampInt;
+            }
+            else if()*/
+            /*weaponIndex += WheelAxisYClampInt + weaponIndex >= 0 &&
             WheelAxisYClampInt + weaponIndex < weapons.Count ?
-            WheelAxisYClampInt : 0;
+            WheelAxisYClampInt + weaponIndex == weapons.Count ?
+            0 : WheelAxisYClampInt : weapons.Count - 1;*/
             //fin cambio de arma
+
+            if(WheelAxisYClampInt + weaponIndex >= 0)
+            {
+                if(WheelAxisYClampInt + weaponIndex < weapons.Count)
+                {
+                    weaponIndex += WheelAxisYClampInt;
+                }
+                else
+                {
+                    if(WheelAxisYClampInt + weaponIndex >= weapons.Count)
+                    {
+                        weaponIndex = 0;
+                    }
+                }
+            }
+            else
+            {
+                weaponIndex = weapons.Count - 1;
+            }
+
             CurrentWeapon.Active(true);
 
 
-            Debug.Log(weaponIndex);
+            //Debug.Log(weaponIndex);
         }
     }
 
