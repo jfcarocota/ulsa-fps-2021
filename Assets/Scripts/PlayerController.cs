@@ -35,11 +35,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     List<Weapon> weapons;
     int weaponIndex = 0;
+    AudioSource audioSource;
+    [SerializeField]
+    AudioClip walkFootStepSFX;
+    [SerializeField, Range(-2f, 2f)]
+    float walkFootStepPitch = 1;
+    [SerializeField]
+    AudioClip jumpoSFX;
 
     void Awake()
     {
         rb ??= GetComponent<Rigidbody>();
         playerInputs ??= new PlayerInputs();
+        audioSource ??= GetComponent<AudioSource>();
     }
 
     void OnEnable()
@@ -52,7 +60,6 @@ public class PlayerController : MonoBehaviour
         playerInputs?.Disable();
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -60,6 +67,25 @@ public class PlayerController : MonoBehaviour
         playerInputs.Gameplay.Run.performed += _=> augmentedSpeed = augmentedFactor;
         playerInputs.Gameplay.Run.canceled += _=> augmentedSpeed = baseSpeed;
         playerInputs.Gameplay.Shoot.performed += _=> CurrentWeapon.Shoot();
+        playerInputs.Gameplay.Movement.performed += _=> Movement();
+        playerInputs.Gameplay.Movement.canceled += _=> CancelMovement();
+    }
+
+    void Movement()
+    {
+        if(audioSource.isPlaying || !Grounding) return;
+        audioSource.clip = walkFootStepSFX;
+        audioSource.loop = true;
+        audioSource.pitch = walkFootStepPitch;
+        audioSource?.Play();
+    }
+
+    void CancelMovement()
+    {
+        audioSource?.Stop();
+        audioSource.clip = null;
+        audioSource.loop = false;
+        audioSource.pitch = 1f;
     }
 
     void Update()
@@ -74,17 +100,6 @@ public class PlayerController : MonoBehaviour
         if(WheelAxisYClampInt != 0f)
         {
             CurrentWeapon.Active(false);
-            //cambio de arma
-            /*if(WheelAxisYClampInt + weaponIndex >= 0 && WheelAxisYClampInt + weaponIndex < weapons.Count)
-            {
-                weaponIndex += WheelAxisYClampInt;
-            }
-            else if()*/
-            /*weaponIndex += WheelAxisYClampInt + weaponIndex >= 0 &&
-            WheelAxisYClampInt + weaponIndex < weapons.Count ?
-            WheelAxisYClampInt + weaponIndex == weapons.Count ?
-            0 : WheelAxisYClampInt : weapons.Count - 1;*/
-            //fin cambio de arma
 
             if(WheelAxisYClampInt + weaponIndex >= 0)
             {
@@ -108,13 +123,15 @@ public class PlayerController : MonoBehaviour
             CurrentWeapon.Active(true);
 
 
-            //Debug.Log(weaponIndex);
         }
     }
 
     void Jump()
     {
         if(!Grounding) return;
+        //audioSource.clip = jumpoSFX;
+        audioSource?.Stop();
+        audioSource.PlayOneShot(jumpoSFX);
         rb.AddForce(JumpDirection, ForceMode.Impulse);
     }
 
