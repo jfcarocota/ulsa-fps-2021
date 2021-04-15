@@ -74,6 +74,36 @@ public class PlayerController : MonoBehaviour
         playerInputs.Gameplay.Shoot.performed += _=> Shoot();
         playerInputs.Gameplay.Movement.performed += _=> Movement();
         playerInputs.Gameplay.Movement.canceled += _=> CancelMovement();
+        playerInputs.Gameplay.WeaponChange.performed += _=> WeaponChange();
+    }
+
+    void WeaponChange()
+    {
+        if(WheelAxisYClampInt != 0f)
+        {
+            CurrentWeapon.Active(false);
+
+            if(WheelAxisYClampInt + weaponIndex >= 0)
+            {
+                if(WheelAxisYClampInt + weaponIndex < weapons.Count)
+                {
+                    weaponIndex += WheelAxisYClampInt;
+                }
+                else
+                {
+                    if(WheelAxisYClampInt + weaponIndex >= weapons.Count)
+                    {
+                        weaponIndex = 0;
+                    }
+                }
+            }
+            else
+            {
+                weaponIndex = weapons.Count - 1;
+            }
+
+            CurrentWeapon.Active(true);
+        }
     }
 
     void Shoot()
@@ -146,32 +176,6 @@ public class PlayerController : MonoBehaviour
             {
                 Movement();
             }
-        }
-
-        if(WheelAxisYClampInt != 0f)
-        {
-            CurrentWeapon.Active(false);
-
-            if(WheelAxisYClampInt + weaponIndex >= 0)
-            {
-                if(WheelAxisYClampInt + weaponIndex < weapons.Count)
-                {
-                    weaponIndex += WheelAxisYClampInt;
-                }
-                else
-                {
-                    if(WheelAxisYClampInt + weaponIndex >= weapons.Count)
-                    {
-                        weaponIndex = 0;
-                    }
-                }
-            }
-            else
-            {
-                weaponIndex = weapons.Count - 1;
-            }
-
-            CurrentWeapon.Active(true);
         }
     }
 

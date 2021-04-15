@@ -26,9 +26,18 @@ public class Weapon : MonoBehaviour
     Transform reticleTrs;
     [SerializeField]
     Vector3 reticleInitialScale;
+    AudioSource audioSource;
+    [SerializeField]
+    AudioClip shotSFX;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     public void Shoot()
     {
+        audioSource?.PlayOneShot(shotSFX);
         currentTarget?.AddForce(-hit.normal * force, ForceMode.Impulse);
         Target target = currentTarget?.GetComponent<Target>();
         target?.GetDamage(damage);
@@ -61,4 +70,6 @@ public class Weapon : MonoBehaviour
     }
 
     public void Active(bool visible) => gameObject.SetActive(visible);
+
+    public AudioClip ShotSFX { get => shotSFX;}
 }
