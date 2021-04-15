@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     float runFootStepPitch = 1;
     [SerializeField]
     AudioClip jumpoSFX;
+    bool isRunning;
 
     void Awake()
     {
@@ -89,6 +90,7 @@ public class PlayerController : MonoBehaviour
         audioSource.loop = true;
         audioSource.pitch = runFootStepPitch;
         audioSource?.Play();
+        isRunning = true;
     }
 
     void CancelRun()
@@ -105,6 +107,7 @@ public class PlayerController : MonoBehaviour
             audioSource.pitch = walkFootStepPitch;
             audioSource?.Play();
         }
+        isRunning = false;
     }
 
     void Movement()
@@ -132,6 +135,18 @@ public class PlayerController : MonoBehaviour
         camRotationAmounthY += CamAxis.x * camRotSpeed * Time.deltaTime;
         rb.rotation = Quaternion.Euler(rb.rotation.x, camRotationAmounthY, rb.rotation.z);
         rb.position += Forward * moveSpeed * augmentedSpeed * Time.deltaTime;
+
+        if(Grounding && !audioSource.isPlaying && Forward != Vector3.zero)
+        {
+            if(isRunning)
+            {
+                Run();
+            }
+            else
+            {
+                Movement();
+            }
+        }
 
         if(WheelAxisYClampInt != 0f)
         {
