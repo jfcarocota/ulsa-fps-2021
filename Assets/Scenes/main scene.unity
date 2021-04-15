@@ -4060,6 +4060,8 @@ MonoBehaviour:
   - {fileID: 1246066703}
   walkFootStepSFX: {fileID: 8300000, guid: 07d37306ff22492488fb18698ee74142, type: 3}
   walkFootStepPitch: 1.2
+  runFootStepSFX: {fileID: 8300000, guid: e0285129da2fc114e9df4bddc7c335d7, type: 3}
+  runFootStepPitch: 1
   jumpoSFX: {fileID: 8300000, guid: d9067badcb4ae3a4297b80a1cd5fb3dd, type: 3}
 --- !u!54 &1814987101
 Rigidbody:

@@ -41,6 +41,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(-2f, 2f)]
     float walkFootStepPitch = 1;
     [SerializeField]
+    AudioClip runFootStepSFX;
+    [SerializeField, Range(-2f, 2f)]
+    float runFootStepPitch = 1;
+    [SerializeField]
     AudioClip jumpoSFX;
 
     void Awake()
@@ -64,11 +68,43 @@ public class PlayerController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         playerInputs.Gameplay.Jump.performed += _=> Jump();
-        playerInputs.Gameplay.Run.performed += _=> augmentedSpeed = augmentedFactor;
-        playerInputs.Gameplay.Run.canceled += _=> augmentedSpeed = baseSpeed;
-        playerInputs.Gameplay.Shoot.performed += _=> CurrentWeapon.Shoot();
+        playerInputs.Gameplay.Run.performed += _=> Run();
+        playerInputs.Gameplay.Run.canceled += _=> CancelRun();
+        playerInputs.Gameplay.Shoot.performed += _=> Shoot();
         playerInputs.Gameplay.Movement.performed += _=> Movement();
         playerInputs.Gameplay.Movement.canceled += _=> CancelMovement();
+    }
+
+    void Shoot()
+    {
+        CurrentWeapon.Shoot();
+    }
+
+    void Run()
+    {
+        augmentedSpeed = augmentedFactor;
+
+        if(!Grounding) return;
+        audioSource.clip = runFootStepSFX;
+        audioSource.loop = true;
+        audioSource.pitch = runFootStepPitch;
+        audioSource?.Play();
+    }
+
+    void CancelRun()
+    {
+        augmentedSpeed = baseSpeed;
+        audioSource?.Stop();
+        audioSource.clip = null;
+        audioSource.loop = false;
+        audioSource.pitch = 1f;
+        if(Axis != Vector2.zero)
+        {
+            audioSource.clip = walkFootStepSFX;
+            audioSource.loop = true;
+            audioSource.pitch = walkFootStepPitch;
+            audioSource?.Play();
+        }
     }
 
     void Movement()
@@ -121,15 +157,12 @@ public class PlayerController : MonoBehaviour
             }
 
             CurrentWeapon.Active(true);
-
-
         }
     }
 
     void Jump()
     {
         if(!Grounding) return;
-        //audioSource.clip = jumpoSFX;
         audioSource?.Stop();
         audioSource.PlayOneShot(jumpoSFX);
         rb.AddForce(JumpDirection, ForceMode.Impulse);
