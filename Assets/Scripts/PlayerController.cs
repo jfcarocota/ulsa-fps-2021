@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAPI;
 
 [RequireComponent(typeof(Rigidbody))]
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     Rigidbody rb;
     PlayerInputs playerInputs;
@@ -67,6 +68,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        if(!IsLocalPlayer) return;
         Cursor.lockState = CursorLockMode.Locked;
         playerInputs.Gameplay.Jump.performed += _=> Jump();
         playerInputs.Gameplay.Run.performed += _=> Run();
@@ -108,6 +110,7 @@ public class PlayerController : MonoBehaviour
 
     void Shoot()
     {
+        Debug.Log("Shot");
         CurrentWeapon.Shoot();
     }
 
@@ -159,6 +162,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if(!IsLocalPlayer) return;
+        //if(!NetworkManager.Singleton.IsHost) return;
         camRotationAmounthX -= CamAxis.y * camRotSpeed * Time.deltaTime;
         camRotationAmounthX = Mathf.Clamp(camRotationAmounthX, -camMaxRotation, camMaxRotation);
         camTrs.localRotation = Quaternion.Euler(camRotationAmounthX, camTrs.rotation.y, camTrs.rotation.z);
