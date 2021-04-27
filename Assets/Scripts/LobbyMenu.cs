@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MLAPI;
+using TMPro;
 
 public class LobbyMenu : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class LobbyMenu : MonoBehaviour
     Button btnStartHost;
     [SerializeField]
     Button btnStartClient;
+    [SerializeField]
+    TMP_InputField tmpInfUsername;
 
     void Awake()
     {
@@ -27,6 +30,10 @@ public class LobbyMenu : MonoBehaviour
         btnStartClient.onClick.AddListener(()=>{
             NetworkManager.Singleton.StartClient();
             gameObject.SetActive(false);
+        });
+        tmpInfUsername.onValueChanged.AddListener(value =>{
+            //Debug.Log(value);
+            Gamemanager.instance.currentUsername = value;
         });
     }
 }

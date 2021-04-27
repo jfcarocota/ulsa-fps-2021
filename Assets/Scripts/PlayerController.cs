@@ -49,6 +49,21 @@ public class PlayerController : NetworkBehaviour
     AudioClip jumpoSFX;
     bool isRunning;
 
+    public override void NetworkStart()
+    {
+        base.NetworkStart();
+        /*foreach(MLAPI.Connection.NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            Debug.Log(client.PlayerObject.name);
+        }*/
+        /*NetworkManager.Singleton.OnClientConnectedCallback += client =>{
+            Debug.Log(client);
+        };*/
+        //NetworkObject.name = Gamemanager.instance.currentUsername;
+        //Debug.Log(NetworkObject.name);
+        //NetworkManager.Singleton.LocalClientId;
+    }
+
     void Awake()
     {
         rb ??= GetComponent<Rigidbody>();
@@ -68,15 +83,21 @@ public class PlayerController : NetworkBehaviour
 
     void Start()
     {
-        if(!IsLocalPlayer) return;
-        Cursor.lockState = CursorLockMode.Locked;
-        playerInputs.Gameplay.Jump.performed += _=> Jump();
-        playerInputs.Gameplay.Run.performed += _=> Run();
-        playerInputs.Gameplay.Run.canceled += _=> CancelRun();
-        playerInputs.Gameplay.Shoot.performed += _=> Shoot();
-        playerInputs.Gameplay.Movement.performed += _=> Movement();
-        playerInputs.Gameplay.Movement.canceled += _=> CancelMovement();
-        playerInputs.Gameplay.WeaponChange.performed += _=> WeaponChange();
+        if(IsLocalPlayer)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            playerInputs.Gameplay.Jump.performed += _=> Jump();
+            playerInputs.Gameplay.Run.performed += _=> Run();
+            playerInputs.Gameplay.Run.canceled += _=> CancelRun();
+            playerInputs.Gameplay.Shoot.performed += _=> Shoot();
+            playerInputs.Gameplay.Movement.performed += _=> Movement();
+            playerInputs.Gameplay.Movement.canceled += _=> CancelMovement();
+            playerInputs.Gameplay.WeaponChange.performed += _=> WeaponChange();
+        }
+        else
+        {
+            camTrs.gameObject.SetActive(false);
+        }
     }
 
     void WeaponChange()
