@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
+using MLAPI.NetworkVariable;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 
@@ -49,9 +51,34 @@ public class PlayerController : NetworkBehaviour
     AudioClip jumpoSFX;
     bool isRunning;
 
+    [SerializeField]
+    NetworkVariableFloat health = new NetworkVariableFloat(20f);
+    [SerializeField]
+    Slider sldHealth;
+    [SerializeField]
+    Button btnHealthTest;
+
     public override void NetworkStart()
     {
         base.NetworkStart();
+        btnHealthTest.onClick.AddListener(()=>{
+            if(IsLocalPlayer)
+            {
+                health.Value--;
+            }
+        });
+
+        health.OnValueChanged += (float oldValue, float newValue)=>{
+            if(IsOwner && IsClient)
+            {
+                sldHealth.value = health.Value;
+            }
+            else
+            {
+                sldHealth.gameObject.SetActive(false);
+                btnHealthTest.gameObject.SetActive(false);
+            }
+        };
         /*foreach(MLAPI.Connection.NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
         {
             Debug.Log(client.PlayerObject.name);
@@ -85,7 +112,7 @@ public class PlayerController : NetworkBehaviour
     {
         if(IsLocalPlayer)
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.lockState = CursorLockMode.Locked;
             playerInputs.Gameplay.Jump.performed += _=> Jump();
             playerInputs.Gameplay.Run.performed += _=> Run();
             playerInputs.Gameplay.Run.canceled += _=> CancelRun();
@@ -242,4 +269,6 @@ public class PlayerController : NetworkBehaviour
     float WheelAxisY => playerInputs.Gameplay.WeaponChange.ReadValue<float>();
 
     Weapon CurrentWeapon => weapons[weaponIndex];
+
+    public NetworkVariableFloat Health => health;
 }
